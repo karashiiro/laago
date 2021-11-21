@@ -1,3 +1,5 @@
+[![Documentation Badge](https://img.shields.io/badge/docs-pkg.go.dev-007D9C)](https://pkg.go.dev/github.com/karashiiro/laago)
+
 # laago
 Go library for Windows' Large Address Aware detection and assignment.
 
