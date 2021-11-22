@@ -1,8 +1,21 @@
 package laago
 
 import (
+	"errors"
 	"os"
 )
+
+const invalidImageError = "the provided executable is not a valid PE image"
+
+func isPeImage(file *os.File) (bool, error) {
+	buf := make([]byte, 2)
+	_, err := file.ReadAt(buf, msdosHeaderSize)
+	if err != nil {
+		return false, err
+	}
+
+	return string(buf) == "PE", nil
+}
 
 // IsLargeAddressAware returns whether or not the executable at the specified
 // location is large address aware.
@@ -12,6 +25,13 @@ func IsLargeAddressAware(path string) (bool, error) {
 		return false, err
 	}
 	defer file.Close()
+
+	isValidImage, err := isPeImage(file)
+	if err != nil {
+		return false, err
+	} else if !isValidImage {
+		return false, errors.New(invalidImageError)
+	}
 
 	// Read the low byte of the file characteristics
 	buf := make([]byte, 1)
@@ -32,6 +52,13 @@ func SetLargeAddressAware(path string) error {
 		return err
 	}
 	defer file.Close()
+
+	isValidImage, err := isPeImage(file)
+	if err != nil {
+		return err
+	} else if !isValidImage {
+		return errors.New(invalidImageError)
+	}
 
 	// Read the low byte of the file characteristics
 	buf := make([]byte, 1)
@@ -60,6 +87,13 @@ func UnsetLargeAddressAware(path string) error {
 		return err
 	}
 	defer file.Close()
+
+	isValidImage, err := isPeImage(file)
+	if err != nil {
+		return err
+	} else if !isValidImage {
+		return errors.New(invalidImageError)
+	}
 
 	// Read the low byte of the file characteristics
 	buf := make([]byte, 1)
