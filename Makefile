@@ -7,4 +7,4 @@ help: ## Show this help
 
 build_dummy: ## Build the dummy application for testing
 	-rm dummy.exe
-	GOARCH=386 go build ./pkg/dummy/
+	GOARCH=386 go build ./cmd/dummy/
